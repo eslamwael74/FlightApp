@@ -2,15 +2,26 @@ package com.example.eslamwael.flightapp.Ui;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
 
 import com.example.eslamwael.flightapp.R;
+import com.example.eslamwael.flightapp.ViewModel.TicketViewModel;
 import com.example.eslamwael.flightapp.databinding.ActivityMainBinding;
+import com.inq.eslamwael74.coremodule.Activity.ViewModelActivity;
+import com.inq.eslamwael74.coremodule.ViewModel.ViewModel;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends ViewModelActivity {
 
     ActivityMainBinding binding;
+    TicketViewModel viewModel;
+
+    @Nullable
+    @Override
+    protected ViewModel createViewModel(@Nullable ViewModel.State saveViewModelState) {
+        viewModel = new TicketViewModel(saveViewModelState,this);
+        return viewModel;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,9 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        MainViewModel viewModel = new MainViewModel(this);
-
-        binding.setViewmodel(viewModel);
+        binding.setViewModel(viewModel);
 
     }
 }

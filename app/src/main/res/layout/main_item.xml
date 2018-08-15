@@ -4,11 +4,18 @@
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
 
         <variable
-            name="ticket"
-            type="com.example.eslamwael.flightapp.Benas.Ticket" />
+            name="viewModel"
+            type="com.example.eslamwael.flightapp.ViewModel.TicketItemViewModel" />
+
+        <variable
+            name="priceVisibility"
+            type="java.lang.Boolean" />
+
     </data>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,9 +53,9 @@
                             android:id="@+id/logo"
                             android:layout_width="@dimen/logo_width"
                             android:layout_height="@dimen/logo_width"
-                            bind:logo="@{ticket.airline.logo}"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginRight="@dimen/dimen_10" />
+                            android:layout_marginRight="@dimen/dimen_10"
+                            bind:logo="@{viewModel.airline.logo}" />
 
                         <TextView
                             android:id="@+id/airline_name"
@@ -58,7 +65,7 @@
                             android:fontFamily="sans-serif-medium"
                             android:gravity="center_vertical"
                             android:maxLines="1"
-                            android:text="@{ticket.airline.name}"
+                            android:text="@{viewModel.airline.name}"
                             android:textColor="@color/airline_name"
                             android:textSize="@dimen/airline_name"
                             android:textStyle="normal" />
@@ -106,8 +113,8 @@
                         android:ellipsize="end"
                         android:fontFamily="sans-serif-medium"
                         android:gravity="left"
-                        android:text="@{ticket.departure}"
                         android:maxLines="1"
+                        android:text="@{viewModel.departure}"
                         android:textColor="@color/departure"
                         android:textSize="@dimen/departure"
                         android:textStyle="normal" />
@@ -129,7 +136,7 @@
                         android:fontFamily="sans-serif-medium"
                         android:gravity="left"
                         android:maxLines="1"
-                        android:text="@{ticket.arrival}"
+                        android:text="@{viewModel.arrival}"
                         android:textColor="@color/departure"
                         android:textSize="@dimen/departure"
                         android:textStyle="normal" />
@@ -146,6 +153,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:fontFamily="sans-serif-medium"
+                            android:text="@{String.valueOf(viewModel.price.price)}"
                             android:textColor="@color/departure"
                             android:textSize="@dimen/price" />
 
@@ -156,6 +164,7 @@
                             android:layout_height="@dimen/logo_width"
                             android:layout_centerVertical="true"
                             android:layout_gravity="right"
+                            bind:visible="@{viewModel.ticketPrice}"
                             app:SpinKit_Color="@color/colorAccent" />
                     </RelativeLayout>
 
@@ -173,9 +182,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:fontFamily="sans-serif"
+                        android:text="@{viewModel.duration}"
                         android:textColor="@color/duration"
                         android:textSize="@dimen/duration"
-                        android:text="@{ticket.duration}"
                         android:textStyle="normal" />
 
                     <TextView
@@ -185,7 +194,7 @@
                         android:layout_weight="1"
                         android:fontFamily="sans-serif"
                         android:gravity="right"
-                        android:text="@{ticket.price.seats}"
+                        android:text="@{viewModel.price.seats}"
                         android:textColor="@color/duration"
                         android:textSize="@dimen/duration"
                         android:textStyle="normal" />

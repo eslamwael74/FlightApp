@@ -1,12 +1,15 @@
 package com.example.eslamwael.flightapp.Benas;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by eslamwael74 on 7/5/2018.
  * Email: eslamwael74@outlook.com.
  */
-public class Ticket {
+public class Ticket implements Parcelable {
 
     String from;
     String to;
@@ -25,6 +28,30 @@ public class Ticket {
     Airline airline;
 
     Price price;
+
+
+    protected Ticket(Parcel in) {
+        from = in.readString();
+        to = in.readString();
+        flightNumber = in.readString();
+        departure = in.readString();
+        arrival = in.readString();
+        duration = in.readString();
+        instructions = in.readString();
+        numberOfStops = in.readInt();
+    }
+
+    public static final Creator<Ticket> CREATOR = new Creator<Ticket>() {
+        @Override
+        public Ticket createFromParcel(Parcel in) {
+            return new Ticket(in);
+        }
+
+        @Override
+        public Ticket[] newArray(int size) {
+            return new Ticket[size];
+        }
+    };
 
     public String getFrom() {
         return from;
@@ -90,4 +117,20 @@ public class Ticket {
         return hash;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(from);
+        dest.writeString(to);
+        dest.writeString(flightNumber);
+        dest.writeString(departure);
+        dest.writeString(arrival);
+        dest.writeString(duration);
+        dest.writeString(instructions);
+        dest.writeInt(numberOfStops);
+    }
 }

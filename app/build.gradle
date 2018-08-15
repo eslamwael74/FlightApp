@@ -22,6 +22,7 @@ android {
 }
 
 dependencies {
+    implementation project(':coremodule')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
@@ -51,5 +52,10 @@ dependencies {
 
     //Progressbar library
     implementation 'com.github.ybq:Android-SpinKit:1.1.0'
+
+    //butterknife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
 
 }
