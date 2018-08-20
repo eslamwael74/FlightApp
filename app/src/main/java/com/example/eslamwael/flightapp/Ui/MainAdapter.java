@@ -11,6 +11,7 @@ import com.example.eslamwael.flightapp.R;
 import com.example.eslamwael.flightapp.ViewModel.TicketItemViewModel;
 import com.inq.eslamwael74.coremodule.Adapter.RecyclerViewAdapter;
 import com.example.eslamwael.flightapp.databinding.MainItemBinding;
+
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
@@ -31,24 +32,24 @@ public class MainAdapter extends RecyclerViewAdapter<Ticket, TicketItemViewModel
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.main_item, parent, false);
 
-
         viewModel = new TicketItemViewModel();
         MainItemBinding binding = MainItemBinding.bind(itemView);
         binding.setViewModel(viewModel);
 
-        return new MyViewHolder(itemView,binding,viewModel);
+        return new MyViewHolder(itemView, binding, viewModel);
 
     }
 
-    public void setItems(ArrayList<Ticket> tickets){
+    public void setItems(ArrayList<Ticket> tickets) {
         items.clear();
         items.addAll(tickets);
         notifyDataSetChanged();
     }
 
-    public void setItemPrice(Ticket ticket,int pos){
+    public void setItemPrice(Ticket ticket, int pos) {
         items.set(pos, ticket);
-        viewModel.isPrice(ticket.getPrice(),true);
+        if (viewModel != null)
+            viewModel.isPrice(ticket.getPrice(), true);
         notifyItemChanged(pos);
     }
 
@@ -61,14 +62,15 @@ public class MainAdapter extends RecyclerViewAdapter<Ticket, TicketItemViewModel
 //        return tickets != null ? tickets.size() : 0;
 //    }
 
-    static class MyViewHolder extends ItemViewHolder<Ticket,TicketItemViewModel> {
+    static class MyViewHolder extends ItemViewHolder<Ticket, TicketItemViewModel> {
 
         public MyViewHolder(View itemView, ViewDataBinding binding, TicketItemViewModel viewModel) {
             super(itemView, binding, viewModel);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
+
         @OnClick
-        void onTicketClick(){
+        void onTicketClick() {
             viewModel.onClick();
         }
     }

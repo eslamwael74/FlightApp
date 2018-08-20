@@ -1,12 +1,7 @@
 package com.example.eslamwael.flightapp.Benas;
 
-import android.databinding.BindingAdapter;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 /**
  * Created by eslamwael74 on 7/5/2018.
@@ -48,13 +43,6 @@ public class Airline implements Parcelable {
         return logo;
     }
 
-    @BindingAdapter({"logo"})
-    public static void loadImage(ImageView view, String imageUrl) {
-        Glide.with(view.getContext())
-                .load(imageUrl)
-                .apply(RequestOptions.circleCropTransform())
-                .into(view);
-    }
 
     @Override
     public int describeContents() {

@@ -19,6 +19,10 @@ android {
     dataBinding {
         enabled = true
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -47,8 +51,7 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp-urlconnection:3.0.1"
     implementation "com.squareup.okhttp3:logging-interceptor:3.6.0"
 
-    // glide image library
-    implementation "com.github.bumptech.glide:glide:4.3.1"
+
 
     //Progressbar library
     implementation 'com.github.ybq:Android-SpinKit:1.1.0'

@@ -29,29 +29,16 @@ public class Ticket implements Parcelable {
 
     Price price;
 
+    boolean isFetchFinished;
 
-    protected Ticket(Parcel in) {
-        from = in.readString();
-        to = in.readString();
-        flightNumber = in.readString();
-        departure = in.readString();
-        arrival = in.readString();
-        duration = in.readString();
-        instructions = in.readString();
-        numberOfStops = in.readInt();
+    public boolean isFetchFinished() {
+        return isFetchFinished;
     }
 
-    public static final Creator<Ticket> CREATOR = new Creator<Ticket>() {
-        @Override
-        public Ticket createFromParcel(Parcel in) {
-            return new Ticket(in);
-        }
+    public void setFetchFinished(boolean fetchFinished) {
+        isFetchFinished = fetchFinished;
+    }
 
-        @Override
-        public Ticket[] newArray(int size) {
-            return new Ticket[size];
-        }
-    };
 
     public String getFrom() {
         return from;
@@ -117,6 +104,7 @@ public class Ticket implements Parcelable {
         return hash;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -124,13 +112,45 @@ public class Ticket implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(from);
-        dest.writeString(to);
-        dest.writeString(flightNumber);
-        dest.writeString(departure);
-        dest.writeString(arrival);
-        dest.writeString(duration);
-        dest.writeString(instructions);
-        dest.writeInt(numberOfStops);
+        dest.writeString(this.from);
+        dest.writeString(this.to);
+        dest.writeString(this.flightNumber);
+        dest.writeString(this.departure);
+        dest.writeString(this.arrival);
+        dest.writeString(this.duration);
+        dest.writeString(this.instructions);
+        dest.writeInt(this.numberOfStops);
+        dest.writeParcelable(this.airline, flags);
+        dest.writeParcelable(this.price, flags);
+        dest.writeByte(this.isFetchFinished ? (byte) 1 : (byte) 0);
     }
+
+    public Ticket() {
+    }
+
+    protected Ticket(Parcel in) {
+        this.from = in.readString();
+        this.to = in.readString();
+        this.flightNumber = in.readString();
+        this.departure = in.readString();
+        this.arrival = in.readString();
+        this.duration = in.readString();
+        this.instructions = in.readString();
+        this.numberOfStops = in.readInt();
+        this.airline = in.readParcelable(Airline.class.getClassLoader());
+        this.price = in.readParcelable(Price.class.getClassLoader());
+        this.isFetchFinished = in.readByte() != 0;
+    }
+
+    public static final Creator<Ticket> CREATOR = new Creator<Ticket>() {
+        @Override
+        public Ticket createFromParcel(Parcel source) {
+            return new Ticket(source);
+        }
+
+        @Override
+        public Ticket[] newArray(int size) {
+            return new Ticket[size];
+        }
+    };
 }

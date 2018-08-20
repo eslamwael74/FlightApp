@@ -1,12 +1,16 @@
 package com.example.eslamwael.flightapp.ViewModel;
 
 import android.content.Context;
+import android.databinding.Bindable;
+import android.databinding.ObservableBoolean;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.example.eslamwael.flightapp.BR;
 import com.example.eslamwael.flightapp.Benas.Price;
 import com.example.eslamwael.flightapp.Benas.Ticket;
 import com.example.eslamwael.flightapp.Network.RetrofitWebService;
@@ -34,11 +38,19 @@ public class TicketViewModel extends RecyclerViewViewModel {
     private final Context context;
     MainAdapter adapter;
     private ArrayList<Ticket> ticketsList = new ArrayList<>();
+    private Ticket ticket;
 
     private static final String from = "DEL";
     private static final String to = "HYD";
     private CompositeDisposable disposable = new CompositeDisposable();
 
+
+    public ObservableBoolean isSwipeToRefreshing = new ObservableBoolean();
+    public ObservableBoolean isRefreshing = new ObservableBoolean();
+
+
+    private int typeOfFail = 1;
+    public int hideProgress = 0;
 
     public TicketViewModel(@Nullable State saveInstanceState, Context context) {
         super(saveInstanceState);
@@ -46,6 +58,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
         if (saveInstanceState instanceof TicketState) {
             ticketsList = ((TicketState) saveInstanceState).tickets;
+            isRefreshing = ((TicketState) saveInstanceState).isRefreshing;
         } else {
             ConnectableObservable<ArrayList<Ticket>> ticketsObservable = getTickets(from, to).replay();
 
@@ -55,6 +68,28 @@ public class TicketViewModel extends RecyclerViewViewModel {
         adapter = new MainAdapter();
         adapter.setItems(ticketsList);
     }
+
+    private void refreshData() {
+        isRefreshing.set(false);
+        isSwipeToRefreshing.set(true);
+        ticketsList = new ArrayList<>();
+
+        ConnectableObservable<ArrayList<Ticket>> ticketsObservable = getTickets(from, to).replay();
+        fetchTickets(ticketsObservable);
+        fetchPriceOfTickets(ticketsObservable);
+
+        adapter.setItems(ticketsList);
+    }
+
+//    public Runnable refreshRunnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            refreshData();
+//        }
+//    };
+
+    public SwipeRefreshLayout.OnRefreshListener onRefreshListener = this::refreshData;
+
 
     @Override
     protected RecyclerViewAdapter getAdapter() {
@@ -96,6 +131,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
                             @Override
                             public void onNext(ArrayList<Ticket> tickets) {
                                 ticketsList = tickets;
+                                ticket = tickets.get(tickets.size() - 1);
                                 adapter.setItems(ticketsList);
                             }
 
@@ -103,16 +139,18 @@ public class TicketViewModel extends RecyclerViewViewModel {
                             public void onError(Throwable e) {
                                 //Error
                                 Log.d("TAG", "onError: " + e.getMessage());
+                                typeOfFail = 0;
+                                hideProgress = 1;
+                                notifyChange();
                             }
 
                             @Override
                             public void onComplete() {
-
+                                isRefreshing.set(true);
+                                isSwipeToRefreshing.set(false);
                             }
                         })
         );
-
-
     }
 
     /**
@@ -168,7 +206,6 @@ public class TicketViewModel extends RecyclerViewViewModel {
         ticketsObservable.connect();
     }
 
-
     /**
      * Making Retrofit call to get single ticket price
      * get price HTTP call returns Price object, but
@@ -198,39 +235,45 @@ public class TicketViewModel extends RecyclerViewViewModel {
         return ticketsList;
     }
 
+    public int onFail() {
+        return typeOfFail;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        disposable.clear();
+    }
 
     private static class TicketState extends RecyclerViewViewModelState {
 
         private final ArrayList<Ticket> tickets;
+        private ObservableBoolean isRefreshing;
 
         public TicketState(TicketViewModel viewModel) {
             super(viewModel);
             tickets = viewModel.adapter.getTickets();
+            isRefreshing = viewModel.isRefreshing;
         }
 
-        public TicketState(Parcel in) {
-            super(in);
-            tickets = in.createTypedArrayList(Ticket.CREATOR);
+
+        @Override
+        public int describeContents() {
+            return 0;
         }
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeTypedList(tickets);
+            dest.writeTypedList(this.tickets);
+            dest.writeParcelable(this.isRefreshing, flags);
         }
 
+        protected TicketState(Parcel in) {
+            super(in);
+            this.tickets = in.createTypedArrayList(Ticket.CREATOR);
+            this.isRefreshing = in.readParcelable(ObservableBoolean.class.getClassLoader());
+        }
 
-        public static Creator<TicketState> CREATOR = new Creator<TicketState>() {
-            @Override
-            public TicketState createFromParcel(Parcel source) {
-                return new TicketState(source);
-            }
-
-            @Override
-            public TicketState[] newArray(int size) {
-                return new TicketState[size];
-            }
-        };
     }
-
 }

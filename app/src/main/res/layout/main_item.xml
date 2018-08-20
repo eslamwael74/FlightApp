@@ -4,16 +4,9 @@
     xmlns:bind="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
-
         <variable
             name="viewModel"
             type="com.example.eslamwael.flightapp.ViewModel.TicketItemViewModel" />
-
-        <variable
-            name="priceVisibility"
-            type="java.lang.Boolean" />
-
     </data>
 
 
@@ -153,6 +146,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
                             android:fontFamily="sans-serif-medium"
+                            bind:visible="@{!viewModel.ticketPrice}"
                             android:text="@{String.valueOf(viewModel.price.price)}"
                             android:textColor="@color/departure"
                             android:textSize="@dimen/price" />

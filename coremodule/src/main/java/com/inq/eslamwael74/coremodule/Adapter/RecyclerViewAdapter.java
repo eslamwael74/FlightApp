@@ -31,13 +31,13 @@ public abstract class RecyclerViewAdapter<ITEM_T,VIEW_MODEL_T extends ItemViewMo
         return items.size();
     }
 
-    public static class ItemViewHolder<T,VT extends ItemViewModel<T>>
+    public static class ItemViewHolder<T,VM extends ItemViewModel<T>>
             extends RecyclerView.ViewHolder {
 
         protected final ViewDataBinding binding;
-        protected final VT viewModel;
+        protected final VM viewModel;
 
-        public ItemViewHolder(View itemView, ViewDataBinding binding, VT viewModel) {
+        public ItemViewHolder(View itemView, ViewDataBinding binding, VM viewModel) {
             super(itemView);
             this.binding = binding;
             this.viewModel = viewModel;

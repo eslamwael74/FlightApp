@@ -10,4 +10,6 @@
     <dimen name="departure">20sp</dimen>
     <dimen name="price">16sp</dimen>
     <dimen name="duration">11sp</dimen>
+    <dimen name="eighty">80dp</dimen>
+
 </resources>
