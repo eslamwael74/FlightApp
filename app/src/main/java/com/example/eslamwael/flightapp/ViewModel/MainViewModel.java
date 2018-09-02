@@ -161,12 +161,9 @@ public class MainViewModel extends ViewModel {
                 .toObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<Price, Ticket>() {
-                    @Override
-                    public Ticket apply(Price price) {
-                        ticket.setPrice(price);
-                        return ticket;
-                    }
+                .map(price -> {
+                    ticket.setPrice(price);
+                    return ticket;
                 });
     }
 

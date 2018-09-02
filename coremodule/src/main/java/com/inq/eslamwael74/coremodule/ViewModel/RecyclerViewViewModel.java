@@ -13,7 +13,7 @@ import com.inq.eslamwael74.coremodule.Adapter.RecyclerViewAdapter;
  */
 public abstract class RecyclerViewViewModel extends ViewModel {
 
-    RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.LayoutManager layoutManager;
     private Parcelable savedLayoutManagerState;
 
     protected abstract RecyclerViewAdapter getAdapter();

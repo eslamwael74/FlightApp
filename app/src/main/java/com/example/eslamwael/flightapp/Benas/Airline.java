@@ -1,5 +1,7 @@
 package com.example.eslamwael.flightapp.Benas;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -7,14 +9,20 @@ import android.os.Parcelable;
  * Created by eslamwael74 on 7/5/2018.
  * Email: eslamwael74@outlook.com.
  */
+@Entity
 public class Airline implements Parcelable {
 
-    int id;
+    @PrimaryKey
+    int arid;
     String name;
     String logo;
 
+    public Airline(){
+
+    }
+
     protected Airline(Parcel in) {
-        id = in.readInt();
+        arid = in.readInt();
         name = in.readString();
         logo = in.readString();
     }
@@ -31,8 +39,8 @@ public class Airline implements Parcelable {
         }
     };
 
-    public int getId() {
-        return id;
+    public int getArid() {
+        return arid;
     }
 
     public String getName() {
@@ -51,7 +59,7 @@ public class Airline implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeInt(arid);
         dest.writeString(name);
         dest.writeString(logo);
     }

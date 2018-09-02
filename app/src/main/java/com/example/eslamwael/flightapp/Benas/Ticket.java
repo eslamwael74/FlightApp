@@ -1,15 +1,26 @@
 package com.example.eslamwael.flightapp.Benas;
 
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverter;
+import android.arch.persistence.room.TypeConverters;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.eslamwael.flightapp.Database.Converters;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by eslamwael74 on 7/5/2018.
  * Email: eslamwael74@outlook.com.
  */
+@Entity
 public class Ticket implements Parcelable {
+
+
+    @PrimaryKey
+    int id;
 
     String from;
     String to;
@@ -25,8 +36,12 @@ public class Ticket implements Parcelable {
     @SerializedName("stops")
     int numberOfStops;
 
+//    @Embedded
+    @TypeConverters(Converters.class)
     Airline airline;
 
+//    @Embedded
+    @TypeConverters(Converters.class)
     Price price;
 
     boolean isFetchFinished;
@@ -112,6 +127,7 @@ public class Ticket implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.id);
         dest.writeString(this.from);
         dest.writeString(this.to);
         dest.writeString(this.flightNumber);
@@ -129,6 +145,7 @@ public class Ticket implements Parcelable {
     }
 
     protected Ticket(Parcel in) {
+        this.id = in.readInt();
         this.from = in.readString();
         this.to = in.readString();
         this.flightNumber = in.readString();
@@ -153,4 +170,12 @@ public class Ticket implements Parcelable {
             return new Ticket[size];
         }
     };
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }

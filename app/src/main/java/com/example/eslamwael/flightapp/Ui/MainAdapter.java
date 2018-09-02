@@ -13,6 +13,7 @@ import com.inq.eslamwael74.coremodule.Adapter.RecyclerViewAdapter;
 import com.example.eslamwael.flightapp.databinding.MainItemBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -40,7 +41,7 @@ public class MainAdapter extends RecyclerViewAdapter<Ticket, TicketItemViewModel
 
     }
 
-    public void setItems(ArrayList<Ticket> tickets) {
+    public void setItems(List<Ticket> tickets) {
         items.clear();
         items.addAll(tickets);
         notifyDataSetChanged();

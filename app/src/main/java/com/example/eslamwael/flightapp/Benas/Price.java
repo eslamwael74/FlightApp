@@ -1,5 +1,8 @@
 package com.example.eslamwael.flightapp.Benas;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,16 +12,20 @@ import com.google.gson.annotations.SerializedName;
  * Created by eslamwael74 on 7/5/2018.
  * Email: eslamwael74@outlook.com.
  */
+@Entity
 public class Price implements Parcelable {
-
+    @PrimaryKey
     float price;
     String seats;
     String currency;
 
+    @ColumnInfo(name = "flight_number_price")
     @SerializedName("flight_number")
     String flightNumber;
 
+    @ColumnInfo(name = "from_price")
     String from;
+    @ColumnInfo(name = "to_price")
     String to;
 
     boolean isVisible = false;

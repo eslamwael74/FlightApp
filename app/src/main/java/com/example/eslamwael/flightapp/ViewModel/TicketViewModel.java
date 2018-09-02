@@ -1,7 +1,7 @@
 package com.example.eslamwael.flightapp.ViewModel;
 
+import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.databinding.Bindable;
 import android.databinding.ObservableBoolean;
 import android.os.Parcel;
 import android.support.annotation.Nullable;
@@ -10,24 +10,29 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import com.example.eslamwael.flightapp.BR;
-import com.example.eslamwael.flightapp.Benas.Price;
 import com.example.eslamwael.flightapp.Benas.Ticket;
+import com.example.eslamwael.flightapp.Database.AppDatabase;
 import com.example.eslamwael.flightapp.Network.RetrofitWebService;
 import com.example.eslamwael.flightapp.Ui.MainAdapter;
 import com.inq.eslamwael74.coremodule.Adapter.RecyclerViewAdapter;
 import com.inq.eslamwael74.coremodule.ViewModel.RecyclerViewViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.example.eslamwael.flightapp.Utils.Const.DB_NAME;
 
 /**
  * Created by EslamWael74 on 8/11/2018.
@@ -37,7 +42,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
     private final Context context;
     MainAdapter adapter;
-    private ArrayList<Ticket> ticketsList = new ArrayList<>();
+    private List<Ticket> ticketsList = new ArrayList<>();
     private Ticket ticket;
 
     private static final String from = "DEL";
@@ -60,7 +65,9 @@ public class TicketViewModel extends RecyclerViewViewModel {
             ticketsList = ((TicketState) saveInstanceState).tickets;
             isRefreshing = ((TicketState) saveInstanceState).isRefreshing;
         } else {
-            ConnectableObservable<ArrayList<Ticket>> ticketsObservable = getTickets(from, to).replay();
+            ConnectableObservable<List<Ticket>> ticketsObservable = getTickets(from, to).replay();
+            appDatabase = Room.databaseBuilder(context, AppDatabase.class, DB_NAME).build();
+
 
             fetchTickets(ticketsObservable);
             fetchPriceOfTickets(ticketsObservable);
@@ -74,7 +81,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
         isSwipeToRefreshing.set(true);
         ticketsList = new ArrayList<>();
 
-        ConnectableObservable<ArrayList<Ticket>> ticketsObservable = getTickets(from, to).replay();
+        ConnectableObservable<List<Ticket>> ticketsObservable = getTickets(from, to).replay();
         fetchTickets(ticketsObservable);
         fetchPriceOfTickets(ticketsObservable);
 
@@ -107,13 +114,44 @@ public class TicketViewModel extends RecyclerViewViewModel {
     }
 
 
+    AppDatabase appDatabase;
+
     /**
      * Making Retrofit call to fetch all tickets
      */
-    private Observable<ArrayList<Ticket>> getTickets(String from, String to) {
-        return RetrofitWebService.getService().searchTickets(from, to)
-                .toObservable()
+    private Observable<List<Ticket>> getTickets(String from, String to) {
+
+        Observable<List<Ticket>>  dbObservable = (Observable<List<Ticket>>) appDatabase.ticketDao()
+                .getAll()
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<List<Ticket>>() {
+                               @Override
+                               public void accept(List<Ticket> tickets) throws Exception {
+                                   Log.e("TAGDB", "getTicketsSizeFrom DATABASE: " + tickets.size());
+                               }
+                           });
+
+                        Observable <List<Ticket>> ticketObservable =
+                                RetrofitWebService
+                                        .getService()
+                                        .searchTickets(from, to)
+                                        .map(tickets -> {
+
+                                            Observable.create(emitter -> {
+                                                appDatabase.ticketDao().insertAll(tickets);
+                                                emitter.onComplete();
+                                            }).subscribeOn(Schedulers.computation())
+                                                    .subscribe();
+                                            return tickets;
+
+                                        })
+                                        .toObservable()
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread());
+
+        return Observable
+                .concat(dbObservable, ticketObservable)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -122,14 +160,14 @@ public class TicketViewModel extends RecyclerViewViewModel {
      * Observable emits List<Ticket> at once
      * All the items will be added to RecyclerView
      */
-    private void fetchTickets(ConnectableObservable<ArrayList<Ticket>> ticketsObservable) {
+    private void fetchTickets(ConnectableObservable<List<Ticket>> ticketsObservable) {
         disposable.add(
                 ticketsObservable
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableObserver<ArrayList<Ticket>>() {
+                        .subscribeWith(new DisposableObserver<List<Ticket>>() {
                             @Override
-                            public void onNext(ArrayList<Ticket> tickets) {
+                            public void onNext(List<Ticket> tickets) {
                                 ticketsList = tickets;
                                 ticket = tickets.get(tickets.size() - 1);
                                 adapter.setItems(ticketsList);
@@ -158,25 +196,15 @@ public class TicketViewModel extends RecyclerViewViewModel {
      * First FlatMap converts single List<Ticket> to multiple emissions
      * Second FlatMap makes HTTP call on each Ticket emission
      */
-    private void fetchPriceOfTickets(ConnectableObservable<ArrayList<Ticket>> ticketsObservable) {
+    private void fetchPriceOfTickets(ConnectableObservable<List<Ticket>> ticketsObservable) {
         disposable.add(
                 ticketsObservable
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         //Converting List<Ticket> emission to single Ticket emissions
-                        .flatMap(new Function<ArrayList<Ticket>, ObservableSource<Ticket>>() {
-                            @Override
-                            public ObservableSource<Ticket> apply(ArrayList<Ticket> tickets) throws Exception {
-                                return Observable.fromIterable(tickets);
-                            }
-                        })
+                        .flatMap((Function<List<Ticket>, ObservableSource<Ticket>>) Observable::fromIterable)
                         //Fetching price on each Ticket emission
-                        .flatMap(new Function<Ticket, ObservableSource<Ticket>>() {
-                            @Override
-                            public ObservableSource<Ticket> apply(Ticket ticket) throws Exception {
-                                return getPriceObservable(ticket);
-                            }
-                        })
+                        .flatMap((Function<Ticket, ObservableSource<Ticket>>) this::getPriceObservable)
                         .subscribeWith(new DisposableObserver<Ticket>() {
                             @Override
                             public void onNext(Ticket ticket) {
@@ -219,19 +247,16 @@ public class TicketViewModel extends RecyclerViewViewModel {
                 .toObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(new Function<Price, Ticket>() {
-                    @Override
-                    public Ticket apply(Price price) {
-                        ticket.setPrice(price);
-                        return ticket;
-                    }
+                .map(price -> {
+                    ticket.setPrice(price);
+                    return ticket;
                 });
     }
 
     /*
     return ticket list if not null.
      */
-    public ArrayList<Ticket> getTicketsList() {
+    public List<Ticket> getTicketsList() {
         return ticketsList;
     }
 
