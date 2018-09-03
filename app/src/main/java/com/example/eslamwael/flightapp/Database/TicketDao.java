@@ -9,6 +9,7 @@ import com.example.eslamwael.flightapp.Benas.Ticket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
@@ -21,7 +22,7 @@ import io.reactivex.Maybe;
 public interface TicketDao {
 
     @Query("SELECT * FROM ticket")
-    Flowable<List<Ticket>>  getAll();
+    Flowable<List<Ticket>> getAll();
 
     @Query("SELECT * FROM ticket WHERE id IN (:ids)")
     Flowable<List<Ticket>>  loadAllByIds(int[] ids);
