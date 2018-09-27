@@ -12,9 +12,6 @@ import com.example.eslamwael.flightapp.ViewModel.TicketItemViewModel;
 import com.inq.eslamwael74.coremodule.Adapter.RecyclerViewAdapter;
 import com.example.eslamwael.flightapp.databinding.MainItemBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
@@ -41,12 +38,6 @@ public class MainAdapter extends RecyclerViewAdapter<Ticket, TicketItemViewModel
 
     }
 
-    public void setItems(List<Ticket> tickets) {
-        items.clear();
-        items.addAll(tickets);
-        notifyDataSetChanged();
-    }
-
     public void setItemPrice(Ticket ticket, int pos) {
         items.set(pos, ticket);
         if (viewModel != null)
@@ -54,14 +45,9 @@ public class MainAdapter extends RecyclerViewAdapter<Ticket, TicketItemViewModel
         notifyItemChanged(pos);
     }
 
-    public ArrayList<Ticket> getTickets() {
-        return items;
-    }
 
-//    @Override
-//    public int getItemCount() {
-//        return tickets != null ? tickets.size() : 0;
-//    }
+
+
 
     static class MyViewHolder extends ItemViewHolder<Ticket, TicketItemViewModel> {
 

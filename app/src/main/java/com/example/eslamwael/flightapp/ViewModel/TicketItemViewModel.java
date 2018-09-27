@@ -1,15 +1,12 @@
 package com.example.eslamwael.flightapp.ViewModel;
 
 import android.databinding.Bindable;
-import android.util.Log;
 
 import com.example.eslamwael.flightapp.BR;
 import com.example.eslamwael.flightapp.Benas.Airline;
 import com.example.eslamwael.flightapp.Benas.Price;
 import com.example.eslamwael.flightapp.Benas.Ticket;
 import com.inq.eslamwael74.coremodule.ViewModel.ItemViewModel;
-
-import static android.support.constraint.Constraints.TAG;
 
 /**
  * Created by EslamWael74 on 8/10/2018.

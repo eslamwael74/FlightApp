@@ -3,6 +3,7 @@ package com.example.eslamwael.flightapp.Database;
 import android.arch.persistence.room.TypeConverter;
 
 import com.example.eslamwael.flightapp.Benas.Airline;
+import com.example.eslamwael.flightapp.Benas.Price;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,19 +18,29 @@ import java.util.List;
 public class Converters {
 
     @TypeConverter
-    public static Object stringToSomeObjectList(String data) {
+    public static Airline stringAirlineToObject(String data) {
         if (data == null) {
-            return Collections.emptyList();
+            return null;
         }
-
-        Type listType = new TypeToken<List<Object>>() {
-        }.getType();
-
-        return new Gson().fromJson(data, listType);
+        return new Gson().fromJson(data, Airline.class);
     }
 
     @TypeConverter
-    public static String someObjectListToString(Object o) {
+    public static String objectAirlineToString(Airline o) {
+        return new Gson().toJson(o);
+    }
+
+
+    @TypeConverter
+    public static Price stringPriceToObject(String data) {
+        if (data == null) {
+            return null;
+        }
+        return new Gson().fromJson(data, Price.class);
+    }
+
+    @TypeConverter
+    public static String objectPriceToString(Price o) {
         return new Gson().toJson(o);
     }
 

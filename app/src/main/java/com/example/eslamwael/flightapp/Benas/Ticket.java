@@ -1,7 +1,9 @@
 package com.example.eslamwael.flightapp.Benas;
 
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Embedded;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
@@ -15,35 +17,49 @@ import com.google.gson.annotations.SerializedName;
  * Created by eslamwael74 on 7/5/2018.
  * Email: eslamwael74@outlook.com.
  */
-@Entity
+@Entity(tableName = "ticketsTable")
 public class Ticket implements Parcelable {
 
 
     @PrimaryKey
     int id;
 
+    @ColumnInfo(name = "from")
     String from;
+
+    @ColumnInfo(name = "tooo")
     String to;
 
+    @ColumnInfo(name = "flight_number")
     @SerializedName("flight_number")
     String flightNumber;
 
+    @ColumnInfo(name = "departure_")
     String departure;
+
+    @ColumnInfo(name = "arrival_")
     String arrival;
+
+    @ColumnInfo(name = "duration_")
     String duration;
+
+    @ColumnInfo(name = "instructions_")
     String instructions;
 
+    @ColumnInfo(name = "stops_")
     @SerializedName("stops")
     int numberOfStops;
 
-//    @Embedded
     @TypeConverters(Converters.class)
-    Airline airline;
+    @ColumnInfo(name = "airline_")
+    public Airline airline;
 
 //    @Embedded
     @TypeConverters(Converters.class)
-    Price price;
+    @ColumnInfo(name = "price_")
+    public Price price;
 
+    @ColumnInfo(name = "fetch_finished_")
     boolean isFetchFinished;
 
     public boolean isFetchFinished() {
@@ -144,6 +160,7 @@ public class Ticket implements Parcelable {
     public Ticket() {
     }
 
+    @Ignore
     protected Ticket(Parcel in) {
         this.id = in.readInt();
         this.from = in.readString();
@@ -177,5 +194,41 @@ public class Ticket implements Parcelable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public void setTo(String to) {
+        this.to = to;
+    }
+
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
+    }
+
+    public void setDeparture(String departure) {
+        this.departure = departure;
+    }
+
+    public void setArrival(String arrival) {
+        this.arrival = arrival;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    public void setNumberOfStops(int numberOfStops) {
+        this.numberOfStops = numberOfStops;
+    }
+
+    public void setAirline(Airline airline) {
+        this.airline = airline;
     }
 }

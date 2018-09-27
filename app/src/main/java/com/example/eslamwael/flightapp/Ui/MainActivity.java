@@ -13,8 +13,8 @@ import com.inq.eslamwael74.coremodule.ViewModel.ViewModel;
 
 public class MainActivity extends ViewModelActivity {
 
-    ActivityMainBinding binding;
     TicketViewModel viewModel;
+    ActivityMainBinding binding;
 
     @Nullable
     @Override

@@ -62,7 +62,8 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
 
             fetchTickets(ticketsObservable);
-            fetchPriceOfTickets(ticketsObservable);
+//            fetchPriceOfTickets(ticketsObservable);
+
         }
         adapter = new MainAdapter();
         adapter.setItems(ticketsList);
@@ -111,7 +112,16 @@ public class TicketViewModel extends RecyclerViewViewModel {
      */
 
     private Observable<List<Ticket>> getTickets(Observable<List<Ticket>> o1, Observable<List<Ticket>> o2) {
-        return Observable.concat(o1, o2).observeOn(AndroidSchedulers.mainThread());
+        return Observable
+                .merge(o1.subscribeOn(Schedulers.io()),
+                        o2.doOnNext(tickets -> {
+                            AppDatabase
+                                    .getInstance(context.getApplicationContext())
+                                    .opaDao()
+                                    .insertAll(tickets);
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private Observable<List<Ticket>> getTicketsFromNetwork(String from, String to) {
@@ -120,17 +130,20 @@ public class TicketViewModel extends RecyclerViewViewModel {
                 .searchTickets(from, to)
                 .toObservable()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread()
+                );
     }
 
     private Observable<List<Ticket>> getTicketsFromDatabase() {
         return AppDatabase
-                .getInstance(context)
-                .ticketDao()
+                .getInstance(context.getApplicationContext())
+                .opaDao()
                 .getAll()
+                .filter(tickets -> tickets != null)
                 .toObservable()
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread())
+                ;
     }
 
     /**
@@ -146,8 +159,11 @@ public class TicketViewModel extends RecyclerViewViewModel {
                         .subscribeWith(new DisposableObserver<List<Ticket>>() {
                             @Override
                             public void onNext(List<Ticket> tickets) {
-                                ticketsList = tickets;
-                                ticket = tickets.get(tickets.size() - 1);
+                                ticketsList.addAll(tickets);
+                                if (ticketsList.size() != 0) {
+                                    ticket = tickets.get(tickets.size() - 1);
+
+                                }
                                 adapter.setItems(ticketsList);
                             }
 
@@ -260,12 +276,12 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
     private static class TicketState extends RecyclerViewViewModelState {
 
-        private final ArrayList<Ticket> tickets;
+        private final List<Ticket> tickets;
         private ObservableBoolean isRefreshing;
 
         public TicketState(TicketViewModel viewModel) {
             super(viewModel);
-            tickets = viewModel.adapter.getTickets();
+            tickets = viewModel.adapter.getItems();
             isRefreshing = viewModel.isRefreshing;
         }
 

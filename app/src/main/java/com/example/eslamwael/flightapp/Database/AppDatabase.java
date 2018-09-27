@@ -15,20 +15,23 @@ import com.example.eslamwael.flightapp.Benas.Ticket;
  * Created by EslamWael74 on 9/2/2018.
  * Email: eslamwael74@outlook.com
  */
-@Database(entities = {Ticket.class, Airline.class, Price.class}, version = 1)
+@Database(entities = {Ticket.class}, version = 1)
 @TypeConverters(Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
 
-    public static AppDatabase instance;
+    private static AppDatabase instance;
+    private static final String DATABASE_NAME = "tickets.db";
 
-    public abstract TicketDao ticketDao();
+    public abstract OpaDao opaDao();
 
-    public static AppDatabase getInstance(Context context){
+    public static AppDatabase getInstance(Context context) {
 
-        if (instance == null){
-            instance = Room.databaseBuilder(context.getApplicationContext(),AppDatabase.class,"tickets")
-            .allowMainThreadQueries()
-            .build();
+        synchronized (AppDatabase.class) {
+            if (instance == null) {
+                instance = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class,DATABASE_NAME)
+                        .allowMainThreadQueries()
+                        .build();
+            }
         }
         return instance;
 

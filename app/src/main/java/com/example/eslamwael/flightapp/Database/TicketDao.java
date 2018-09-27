@@ -21,16 +21,5 @@ import io.reactivex.Maybe;
 @Dao
 public interface TicketDao {
 
-    @Query("SELECT * FROM ticket")
-    Flowable<List<Ticket>> getAll();
-
-    @Query("SELECT * FROM ticket WHERE id IN (:ids)")
-    Flowable<List<Ticket>>  loadAllByIds(int[] ids);
-
-    @Insert
-    void insertAll(List<Ticket> tickets);
-
-    @Delete
-    void delete(Ticket ticket);
 
 }

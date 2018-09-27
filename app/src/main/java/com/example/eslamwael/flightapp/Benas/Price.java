@@ -2,6 +2,7 @@ package com.example.eslamwael.flightapp.Benas;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,7 +13,6 @@ import com.google.gson.annotations.SerializedName;
  * Created by eslamwael74 on 7/5/2018.
  * Email: eslamwael74@outlook.com.
  */
-@Entity
 public class Price implements Parcelable {
     @PrimaryKey
     float price;
@@ -82,6 +82,7 @@ public class Price implements Parcelable {
     public Price() {
     }
 
+    @Ignore
     protected Price(Parcel in) {
         this.price = in.readFloat();
         this.seats = in.readString();
