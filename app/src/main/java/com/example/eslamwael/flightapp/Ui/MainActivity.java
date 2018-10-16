@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.example.eslamwael.flightapp.R;
-import com.example.eslamwael.flightapp.ViewModel.TicketViewModel;
+import com.example.eslamwael.flightapp.TicketViewModel;
 import com.example.eslamwael.flightapp.databinding.ActivityMainBinding;
 import com.inq.eslamwael74.coremodule.Activity.ViewModelActivity;
 import com.inq.eslamwael74.coremodule.ViewModel.ViewModel;

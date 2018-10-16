@@ -7,7 +7,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.eslamwael.flightapp.ViewModel.TicketViewModel" />
+            type="com.example.eslamwael.flightapp.TicketViewModel" />
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout

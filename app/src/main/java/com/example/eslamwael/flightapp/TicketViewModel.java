@@ -1,4 +1,4 @@
-package com.example.eslamwael.flightapp.ViewModel;
+package com.example.eslamwael.flightapp;
 
 import android.content.Context;
 import android.databinding.ObservableBoolean;
@@ -113,7 +113,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
     private Observable<List<Ticket>> getTickets(Observable<List<Ticket>> o1, Observable<List<Ticket>> o2) {
         return Observable
-                .merge(o1.subscribeOn(Schedulers.io()),
+                .concat(o1.subscribeOn(Schedulers.io()),
                         o2.doOnNext(tickets -> {
                             AppDatabase
                                     .getInstance(context.getApplicationContext())

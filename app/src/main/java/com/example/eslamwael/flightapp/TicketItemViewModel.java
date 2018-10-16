@@ -1,4 +1,4 @@
-package com.example.eslamwael.flightapp.ViewModel;
+package com.example.eslamwael.flightapp;
 
 import android.databinding.Bindable;
 

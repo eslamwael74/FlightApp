@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 public class Ticket implements Parcelable {
 
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     int id;
 
     @ColumnInfo(name = "from")

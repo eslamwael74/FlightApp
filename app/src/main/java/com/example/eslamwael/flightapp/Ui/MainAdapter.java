@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.example.eslamwael.flightapp.Benas.Ticket;
 import com.example.eslamwael.flightapp.R;
-import com.example.eslamwael.flightapp.ViewModel.TicketItemViewModel;
+import com.example.eslamwael.flightapp.TicketItemViewModel;
 import com.inq.eslamwael74.coremodule.Adapter.RecyclerViewAdapter;
 import com.example.eslamwael.flightapp.databinding.MainItemBinding;
 
