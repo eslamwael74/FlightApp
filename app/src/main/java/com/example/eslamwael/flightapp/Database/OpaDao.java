@@ -31,4 +31,7 @@ public interface OpaDao {
 
     @Delete
     void delete(Ticket ticket);
+
+    @Query("DELETE FROM ticketsTable")
+    void deleteAll();
 }

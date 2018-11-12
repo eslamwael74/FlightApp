@@ -113,8 +113,10 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
     private Observable<List<Ticket>> getTickets(Observable<List<Ticket>> o1, Observable<List<Ticket>> o2) {
         return Observable
-                .concat(o1.subscribeOn(Schedulers.io()),
-                        o2.doOnNext(tickets -> {
+                .concat(o1.subscribeOn(AndroidSchedulers.mainThread())
+                        , o2.doOnNext(tickets -> {
+                            AppDatabase.getInstance(context)
+                                    .opaDao().deleteAll();
                             AppDatabase
                                     .getInstance(context.getApplicationContext())
                                     .opaDao()
@@ -159,6 +161,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
                         .subscribeWith(new DisposableObserver<List<Ticket>>() {
                             @Override
                             public void onNext(List<Ticket> tickets) {
+                                ticketsList.clear();
                                 ticketsList.addAll(tickets);
                                 if (ticketsList.size() != 0) {
                                     ticket = tickets.get(tickets.size() - 1);
@@ -171,7 +174,8 @@ public class TicketViewModel extends RecyclerViewViewModel {
                             public void onError(Throwable e) {
                                 //Error
                                 Log.d("TAG", "onError: " + e.getMessage());
-                                typeOfFail = 0;
+                                if (ticketsList.size() == 0)
+                                    typeOfFail = 0;
                                 hideProgress = 1;
                                 notifyChange();
                             }
