@@ -62,7 +62,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
 
             fetchTickets(ticketsObservable);
-//            fetchPriceOfTickets(ticketsObservable);
+            fetchPriceOfTickets(ticketsObservable);
 
         }
         adapter = new MainAdapter();
@@ -113,16 +113,15 @@ public class TicketViewModel extends RecyclerViewViewModel {
 
     private Observable<List<Ticket>> getTickets(Observable<List<Ticket>> o1, Observable<List<Ticket>> o2) {
         return Observable
-                .concat(o1.subscribeOn(AndroidSchedulers.mainThread())
-                        , o2.doOnNext(tickets -> {
-                            AppDatabase.getInstance(context)
-                                    .opaDao().deleteAll();
-                            AppDatabase
-                                    .getInstance(context.getApplicationContext())
-                                    .opaDao()
-                                    .insertAll(tickets);
-                        })
-                )
+                .concat(o2.doOnNext(tickets -> {
+                    AppDatabase.getInstance(context)
+                            .opaDao().deleteAll();
+                    AppDatabase
+                            .getInstance(context.getApplicationContext())
+                            .opaDao()
+                            .insertAll(tickets);
+                }).subscribeOn(AndroidSchedulers.mainThread()
+                ), o1.subscribeOn(AndroidSchedulers.mainThread()))
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
@@ -141,7 +140,7 @@ public class TicketViewModel extends RecyclerViewViewModel {
                 .getInstance(context.getApplicationContext())
                 .opaDao()
                 .getAll()
-                .filter(tickets -> tickets != null)
+                .filter(tickets -> tickets != null && tickets.size() != 0)
                 .toObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -165,7 +164,6 @@ public class TicketViewModel extends RecyclerViewViewModel {
                                 ticketsList.addAll(tickets);
                                 if (ticketsList.size() != 0) {
                                     ticket = tickets.get(tickets.size() - 1);
-
                                 }
                                 adapter.setItems(ticketsList);
                             }
